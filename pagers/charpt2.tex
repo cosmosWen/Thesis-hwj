@@ -5,20 +5,54 @@
 	TensorFlow在2015年11月由Google开放，从此，它已经成为GitHub上最受欢迎的机器学习库。TensorFlow——第二代分布式机器学习算法实现框架和部署系统，是基于使用DisBelief时的经验及训练大规模分布是神经网络的需求开发的。但是在某些基准上，TensorFlow是DistBelief的两倍。可以方便地部署到各种平台，大大简化了真实场景中应用机器学习的难度。TensorFlow的计算可以表示为有状态的数据流式图，使用数据流式图来规划计算流程，可以将计算映射到不同的硬件和操作系统平台。对于大规模的神经网络训练，TensorFlow可以让用户简单地实现并行计算，同时使用不同的硬件资源进行训练，同步或异步地更新全局共享的模型参数和状态。
 	TensorFlow是相对高阶的机器学习库，用户可以方便的用它设计神经网络结构，支持自动求导，核心代码是用C++编写的，简化了线上部署的复杂度，可以在手机和CPU这种内存紧张的设备上运行。除了C++接口外还有Python、Go、Java等接口。可以部署在一台或多台CPU、GPU上，兼容多个平台，包括Windows、Linux、Android等。有TF.Learn和TF.Slim等上层组件可以帮助快速的设计新网络，并且兼容Scikit-learn estimator接口，同时TensorFlow不局限于神经网络，数据流式图支持非常自由的算法表达，只要可以将计算表达成计算图的形式，就可以使用TensorFlow。
 	另一个重要特点是它灵活的移植性，可以将同一份代码几乎不经过修改就轻松的部署到任意数量CPU或GPU的PC、服务器或者移动设备上。还有一个优势就是极快的编译速度，还有功能强大的TensorBoard，能可视化网络结构和训练过程，对于观察复杂的网络结构和监控长时间、大规模的训练很有帮助。
-		%UCSC Genome Browser
-		\section{核心概念}
+	\section{核心概念}
 		\subsection{计算图}
-		UCSC Genome Browser是由University of California Santa Cruz (UCSC) 创立和维护的，该站点包含有人类、小鼠和大鼠等多个物种的基因组草图，并提供一系列的网页分析工具。站点用户可以通过它可靠和迅速地浏览基因组的任何一部分，并且同时可以得到与该部分有关的基因组注释信息，如已知基因，预测基因，表达序列标签，信使RNA，CpG岛，克隆组装间隙和重叠，染色体带型，小鼠同源性等。用户也可以因为教育或科研目的加上他们自己的注释信息。UCSC Genome Browser目前应用相当广泛，比如Ensembl 就是使用它的人类基因组序列草图为基础的。
-		\subsection{可视化方式}
-		JBrowse用 track 的方式进行可视化，提供平滑的动态移动和缩放功能，也有导航和通道的选择。JBrowse可以展示多种 track 视图，除基本视图外，还可以显示非翻译区、外显子、内含子结构等。
+		计算图是TensorFlow最基本的一个概念，TensorFlow中的所有计算都会被转化为计算图上的节点。TensorFlow中的计算可以表示为一个有向图（directed graph）、数据流图，称为计算图（computation graph） 
+		TensorFlow是一个通过计算图的形式来表述计算的编程系统，其中每一个运算操作（operation）将作为一个节点（node），节点与节点之间的连接成为边（edge）。计算图中每一个节点可以有任意多个输入和任意多个输出，节点可以算是运算操作的实列化。在计算图的边中流动（flow）的数据被称为张量（Tensor），这个也是Tensoflow名字的由来。没有数据流动的边被称为依赖控制。计算图描述了张量数据的计算流程，负责维护和更新状态，对分支进行条件控制和循环操作。如果机器上有超过一个可用的 GPU, 除第一个外的其它 GPU 默认是不参与计算的. 为了让 TensorFlow 使用这些 GPU, 你必须将 op 明确指派给它们执行. with...Device 语句用来指派特定的 CPU 或 GPU 执行操作
+		\begin{figure}[!ht]
+			\centering
+			\includegraphics[width=0.5\textwidth]{figures/2-1}
+			\caption{计算图示例}
+			\label{fig:2-1}
+		\end{figure}
 		
-		\subsection{可视化内容}
-		UCSC基因组浏览器提供了多样化的注释数据集（称为“轨迹”并以图形方式呈现），包括mRNA比对，DNA重复元件的映射，基因预测，基因表达数据，疾病关联数据（代表基因的关系疾病）和市售基因芯片（例如Illumina和Agilent）的映射。显示的基本范例是在水平维度上显示基因组序列，并显示mRNA的位置，基因预测等的图形表示。沿着坐标轴的颜色块显示各种数据类型对齐的位置。在单个坐标轴上显示这种大量数据类型的能力使浏览器成为数据垂直整合的便利工具。
-		UCSC浏览器与其他基因组浏览器区分开来的一个独特而有用的功能是显示器的不断变化的性质。可以显示任何大小的序列，从单个DNA碱基到整个染色体（人类chr1 = 2.45亿碱基，Mb）和完整的注释轨迹。研究人员可以显示单个基因，单个外显子或整个染色体带，显示数十个或数百个基因以及许多注释的任意组合。方便的拖放功能允许用户选择基因组图像中的任何区域，并将其扩展到占据全屏。
+		\subsection{运行模型}
+		Session（会话）是用户使用TensorFlow时的交互式接口。Session拥有并管理TensorFlow程序运行时的所有资源。当所有计算完成之后需要关闭会话来帮助系统回收资源，否则就可能出现资源泄漏的问题。TensorFlow中使用Session的模式一般有两种，第一种模式需要明确调用会话生成函数和关闭会话函数，第二种模式是通过Python的上下文管理器来使用会话，这种模式为了解决异常退出时资源释放的问题，TensorFlow的会话不会自动生成默认的会话，需要手动指定，当默认的会话被指定之后可以通过tf.Tensor.eval()函数计算一个张量的取值，在交互式环境下（比如Python脚本等）通过设置默认会话的方式来获取张量的取值更加方便，函数tf.InteractiveSession（）在交互式环境下直接构建默认会话。使用这个函数会自动将生成的会话注册为默认会话。可以省去将产生的会话注册为默认会话的过程，无论哪种方法都可以通过ConfigProto Protocol Buffer 来配置需要生成的会话，通过ConfigProto可以配置类似并行的线程数，GPU分配策略，运算超时时间等参数。在这些参数中最常使用的有两个allow\_soft\_placement=和log\_device\_placement都是布尔型的参数。 
+		在实现上, TensorFlow 将图形定义转换成分布式执行的操作, 以充分利用可用的计算资源(如 CPU 或 GPU)。 一般你不需要显式指定使用 CPU 还是 GPU, TensorFlow 能自动检测。如果检测到 GPU, TensorFlow 会尽可能地利用找到的第一个 GPU 来执行操作。
 		
-		\subsection{系统架构}
-		UCSC Genome Browser 的开发，起源于一小段应用于 C. elegans 基因预测拼接图谱的 C 语言脚本，后期通过不断扩充，才变成现在这样强大的一个分析工具。 现在 UCSC 的主要开发语言是Java/Python，后台数据库依赖于 mysql，而且提供mysql 的公共接口，只要用户本地电脑装有 mysql客户端，就可以通过 UCSC 提供的接口访问网站后台的数据库；对于前台要求，UCSC 可以较好地兼容 IE、Chrome、Firefox 等主流网络浏览器。UCSC 是完全开源的，用户可以下载到完整源码。
-		\subsection{运行机理}
-		\subsection{优缺点}
-		优点：JBrowse 属于新一代基因组浏览器，作为GBrowse的继任者，是基于最新的前端技术开发的。在 JBrowse 中，服务器端的负荷极大地降低，后台服务器只需要向浏览器客户端发送数据文件，将繁杂的计算工作从服务端脱离出来，大量计算工作被合理分配到了前端。同时，JBrowse对Cookies技术也得到了很好的支持，可以有效记录用户的喜好。\\
-		\indent 缺点： JBrowse 把可视化主要工作放在了浏览器端，但其可视化方法仅是一些普通的HTML 标签实现，造成可视化不友好等问题。同时浏览器在绘制图像时需要运行大量的JavaScript代码，而且目前主流浏览器对 HTML5 中新标签的支持不完善，造成用户体验不佳等问题。
+		\subsection{数据模型}
+		张量是TensorFlow管理数据的形式，可以被简单的理解为多维数组。其中零阶张量表示标量（scalar），也就是一个数；第一阶张量为向量（vector），也就是一个一维数组；第n阶张量可以理解为一个n维数组。在张量中并没有真正保存数字，它保存的是如何得到这些数字的计算过程。TensorFlow计算结果不是一个具体的数字，而是一个张量的结构，一个张量主要有三个属性：名字（name），维度（shape），类型（type） 
+		第一个属性名字不仅是一个张量的唯一标识符，还给出了这个张量是如何计算出来的，张量和计算图上节点所代表的计算结果是对应的，张量的命名可以通过“node：src\_output”的形式给出，其中node为节点的名称，src\_output表示当前张量来自节点的第几个输出。 
+		第二个属性是张量的维度（shape）描述了一个张量的维度信息。 
+		第三个属性是类型（type）每一个张量会有一个唯一的类型，TensorFlow会对参与运算的所有张量进行类型检查，当发现类型不匹配时会报错。 
+		TensorFlow支持多种不同的类型，主要包括了实数（tf.float16 tf.float32,tf.float64)、整数（tf.int16,tf.int32,tf.int64,tf.int8,tf.uint16,tf.uint8）、布尔型（tf.bool）,复数型（tf.complex64,tf.complex128）等。 对于张量的使用，可以分为两大类。第一类是对中间计算结果的引用。当一个九三包含很多中间结果时，使用张量可以大大提高代码的可读性。第二类是当计算图构造完成之后，张量可以用来获得计算结果，结合会话使用tf.Session().run(result)就可以得到真实的数字.
+		\subsection{变量}
+		在TensorFlow中，变量的作用就是保存和更新神经网络的参数。变量包含张量 (Tensor)存放于内存的缓存区。建模时它们需要被明确地初始化，模型训练后它们必须被存储到磁盘。这些变量的值可在之后模型训练和分析是被加载。 TensorFlow提供了一个通过变量名来创建或者获取一个变量的机制。通过这个机制，在不同的函数中可以直接通过变量的名字来使用变量，而不需要将变量通过参数的形式到处传递，这个机制主要通过tf.get\_variable()和tf.variable\_scope()函数实现的。
+	\section{Tensorflow环境搭建}
+	Tensorflow对各种主流的操作系统的支持都比较完善，本文将使用Tensorflow对Python提供的API进行研究学习。Tensorflow支持的Python环境有Python2.7和Python3.5，目前最新版本的Tensorflow支持Python3.5。Tensorflow环境的搭建可以分为两类，第一种是使用官方提供的发行进行安装使用，第二种是下载Tensorflow的源代码进行编译安装使用。本小节将以第一种方式在Linux和Windows系统环境下分别使用Pip和Anaconda进行环境搭建。
+		\subsection{Pip下环境搭建}
+		Pip是一个安装，管理Python软件包的工具，通过Pip可以安装已经打包好的TensorFlow以及TensorFlow所需要的依赖关系。环境需保证操作系统上有Python的环境，首先，安装Python的Pip包，然后通过Pip命令针对不同版本的Python安装CPU或者GPU版本的Tensorflow。如下安装过程的详细代码。
+		\begin{lstlisting}
+		 sudo apt-get install python-pip python-dev
+		 pip install tensorflow  # Python 2.7; CPU support (no GPU support)
+		 pip3 install tensorflow # Python 3.n; CPU support (no GPU support)
+		 pip install tensorflow-gpu  # Python 2.7;  GPU support
+		 pip3 install tensorflow-gpu # Python 3.n; GPU support
+		\end{lstlisting}
+		\subsection{Anaconda下环境搭建}
+		Anaconda是由Python开发的领先的开放数据科学平台。 包括超过100种最受欢迎的数据科学Python，R和Scala软件包。内置了数百个Python经常用的库，包括Scikit-learn、Numpy、SciPy、Pandas等。 首先，需要安装Anaconda的环境，其次创建Python不同版本的环境，最后通过pip安装TensorFlow的环境。如下安装过程的详细代码。图2-2安装成功后测试图。
+		\begin{lstlisting}
+		Anaconda3-4.3.1-Windows-x86_64.exe #Windows Install
+		bash Anaconda3-4.3.1-Linux-x86_64.sh #Linux Install
+		conda create --name python35 python=3.5 # create environment in Linux and Windows
+		source activate Python35 # Linux
+		activate Python35 #Windows
+		pip install tensorflow #install TensorFlow
+		\end{lstlisting}
+		
+		\begin{figure}[!ht]
+			\centering
+			\includegraphics[width=0.8\textwidth]{figures/2-2}
+			\caption{TensorFlow安装成功}
+			\label{fig:2-2}
+		\end{figure}
