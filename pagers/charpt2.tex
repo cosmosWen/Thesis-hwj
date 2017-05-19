@@ -4,15 +4,19 @@
 	2015年11月Google在Github开放TensorFlow的源代码，从此，它已经成为GitHub上最受欢迎的机器学习库。TensorFlow是第二代分布式机器学习算法实现框架及部署系统，是基于使用DisBelief时的经验及训练大规模分布是神经网络的需求开发的。但是在某部分基准上，TensorFlow的性能是DistBelief的两倍。可以方便地部署到各种平台，大大简化了真实场景中应用机器学习的难度。TensorFlow的计算可以表示为有状态的数据流式图，使用数据流式图来规划计算流程，可以将计算映射到不同的硬件和操作系统平台。对于大规模的神经网络训练，TensorFlow可以让用户简单地实现并行计算，同时使用不同的硬件资源进行训练，同步或异步地更新全局共享的模型参数和状态。
 	TensorFlow是相对高阶的机器学习库，用户可以方便的用它设计神经网络结构，支持自动求导，核心代码是用C++编写的，简化了线上部署的复杂度，可以在手机和CPU这种内存紧张的设备上运行。除了C++接口外还有Java、Python、Go等接口。TensorFlow可以部署在一台或多台CPU、GPU的机器上，兼容多种平台，包括Android、Windows、Linux等。有TF.Learn和TF.Slim等上层组件可以帮助快速的设计新网络，并且兼容Scikit-learn estimator接口，同时TensorFlow不仅仅局限于神经网络和数据流式图并支持非常自由的算法表达，只要可以将计算表达成计算图的形式，就可以使用TensorFlow。
 	另一个重要特点是可以灵活的移植性，可以将同一份代码几乎不经过修改就轻松的部署到任意数量CPU或GPU的PC上、服务器或者移动设备上。还有一个优势就是编译速度极快，在创建新的网络结构时，Theano通常需要很长时间的进行编译，因此尝试新模型需要付出较大的代价，而TensorFlow不存在这样的问题。而且还有功能强大的TensorBoard，能够将网络结构和训练过程进行可视化，对于研究者记录和观察复杂的网络结构和监控长时间、大规模的训练有很大的帮助。TensorFlow不仅支持常见的神经网络结构外，而且还支持深度强化学习甚至支持密集的科学计算。TensorFlow之前版本不支持symbolic loop，需要使用Python循环解决这些问题，从而带来无法进行图编译优化等一系列问题，但最近新发展的XLA开始对JIT及AOT进行支持，另外其使用bucketing trick也可以较高效地实现循环神经网络。TensorFlow的一个不占优势的方面，可能对于计算图必须构建为静态图，这使得很多计算实现困难。
+	\begin{figure}[!ht]
+		\centering
+		\includegraphics[width=0.5\textwidth]{figures/2-1}
+		\caption{TensorFlow发展史}
+	\end{figure}
 	\section{核心概念}
 		\subsection{计算图}
 		计算图是TensorFlow中最基本的概念之一，在TensorFlow中的所有计算都会被转化为计算图上的节点。在TensorFlow中计算可以表示为一个有向图（directed graph）或者称为计算图（computation graph）。 
 		TensorFlow是一个通过计算图的形式来表述计算的编程系统，其中每一个运算操作（operation）将作为一个节点（node），节点与节点之间的连接成为边（edge）。计算图中每一个节点可以有任意多个输入和任意多个输出，节点可以算是运算操作的实列化。在计算图的边中流动（flow）的数据被称为张量（Tensor），这个也是Tensoflow名字的由来。没有数据流动的边被称为依赖控制。计算图描述了张量数据的计算流程，负责维护和更新状态，对分支进行条件控制和循环操作。如果机器上有超过一个可用的 GPU, 除第一个外的其它 GPU 默认是不参与计算的. 为了让 TensorFlow 使用这些 GPU, 你必须将 op 明确指派给它们执行. with...Device 语句用来指派特定的 CPU 或 GPU 执行操作
 		\begin{figure}[!ht]
 			\centering
-			\includegraphics[width=0.5\textwidth]{figures/2-1}
+			\includegraphics[width=0.5\textwidth]{figures/2-2}
 			\caption{计算图示例}
-			\label{fig:2-1}
 		\end{figure}
 		
 		\subsection{运行模型}
@@ -52,7 +56,7 @@
 		
 		\begin{figure}[!ht]
 			\centering
-			\includegraphics[width=0.8\textwidth]{figures/2-2}
+			\includegraphics[width=0.8\textwidth]{figures/2-3}
 			\caption{TensorFlow安装成功}
-			\label{fig:2-2}
+			\label{fig:2-3}
 		\end{figure}
